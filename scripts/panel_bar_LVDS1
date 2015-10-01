@@ -1,0 +1,89 @@
+#! /bin/sh
+
+. panel_config
+
+while read -r line ; do
+	case $line in
+        a*)
+            # Arch info
+            archinfo="${line#?} %{B-}%{F-}"
+            ;;
+        B*)
+            battery="${line#?} %{B-}%{F-}"
+            ;;
+        R*)
+            # current ram usage
+            ram="${line#?} %{B-}%{F-}"
+            ;;
+        C*)
+            # current cpu usage
+            cpu="${line#?} %{B-}%{F-}"
+            ;;
+        c*)
+            # current song
+            music="${line#?} %{B-}%{F-}"
+            ;;
+        s*)
+            # Music stopped
+            music="${line#?} %{B-}%{F-}"
+            ;;
+        h*)
+            # hdd
+            hdd="${line#?} %{B-}%{F-}"
+            ;;
+        N*)
+            # hdd
+            mail="${line#?} %{B-}%{F-}"
+            ;;
+        w*)
+            # wifi
+            wifi="${line#?} %{B-}%{F-}"
+            ;;
+        V*)
+            # volume output
+            volume="${line#?}% %{B-}%{F-}"
+            ;;
+		T*)
+			# date and time output
+            clock="${line#?} %{B-}%{F-}"
+			;;
+		W*)
+			# bspwm internal state
+			wm_infos="%{F-}%{B-}"
+			IFS=':'
+			set -- ${line#?}
+			while [ $# -gt 0 ] ; do
+				item=$1
+				name=${item#?}
+				case $item in
+					O*)
+						# focused occupied desktop
+						wm_infos="${wm_infos}%{U$BASE05}%{+u} $name %{-u}%{B-}%{F-}"
+						;;
+					F*)
+						# focused free desktop
+						wm_infos="${wm_infos}%{U$BASE05}%{+u} $name %{-u}%{B-}%{F-}"
+						;;
+					U*)
+						# focused urgent desktop
+						wm_infos="${wm_infos}%{U$MAGENTA}%{+u} $name %{-u}%{B-}%{F-}"
+						;;
+					o*)
+						# occupied desktop
+						wm_infos="${wm_infos}%{U$BASE02}%{+u} $name %{-u}%{B-}%{F-}"
+						;;
+					f*)
+						# free desktop
+						wm_infos="${wm_infos}%{F$BASE02} $name %{B-}%{F-}"
+						;;
+					u*)
+						# urgent desktop
+						wm_infos="${wm_infos}%{U$RED}%{F$RED}%{+u} $name %{-u}%{B-}%{F-}"
+						;;
+				esac
+				shift
+			done
+			;;
+	esac
+	printf "%b\n" "%{l}${music} %{c}${wm_infos}%{r}${wifi} ${battery} ${volume} ${clock}"
+done

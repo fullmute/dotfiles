@@ -1,0 +1,24 @@
+#include "/home/z3ni/.colors/gruvbox"
+
+URxvt.perl-ext-common: default,matcher,clipboard
+URxvt.url-launcher: /usr/bin/firefox
+URxvt.matcher.button: 1
+
+URxvt.keysym.Shift-Control-C: perl:clipboard:copy
+URxvt.keysym.Shift-Control-V: perl:clipboard:paste
+
+URxvt*scrollBar: off
+
+URxvt*dynamicColors: on
+URxvt*depth: 0
+URxvt*termName: rxvt-unicode-256color
+
+URxvt.font: xft:Roboto Mono:pixelsize=9
+Xft.autohint: 0
+Xft.dpi: 96
+Xft.lcdfilter:  lcddefault
+Xft.hintstyle:  hintfull
+Xft.hinting: 1
+Xft.antialias: 1
+Xft.rgba: rgb
+

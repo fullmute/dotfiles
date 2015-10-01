@@ -1,0 +1,17 @@
+#!/bin/bash
+
+conf() {
+	case $1 in
+		bspwm) emacs ~/.config/bspwm/bspwmrc ;;
+		sxhkd) emacs ~/.config/sxhkd/sxhkdrc ;;
+        panel) emacs ~/scripts/panel ;;
+        panel_bar) emacs ~/scripts/panel_bar ;;
+        launcher) emacs ~/scripts/launcher ;;
+        locker) emacs ~/scripts/locker ;;
+		*) echo "Unknown application." ;;
+	esac
+}
+
+
+alias ls='ls --color=auto'
+alias la='ls -al --color=auto'

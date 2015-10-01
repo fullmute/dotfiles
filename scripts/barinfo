@@ -1,0 +1,116 @@
+#!/bin/sh
+
+. panel_config
+
+battery() {
+    capacity=$(cat /sys/class/power_supply/BAT1/capacity)
+    status=$(cat /sys/class/power_supply/BAT1/status)
+    batico="battery"
+    sign=""
+
+    if [ $status == "Charging" ]; then
+        sign="+"
+    else if [ $status == "Discharging" ]; then
+             sign="-"
+         else
+             sign=""
+             batico="%{F$BASE05}%{B$BASE01} FULL %{F-}%{B$BASE00}"
+         fi
+    fi
+
+    echo "%{F$BASE03}%{B$BASE00} $batico %{F-}%{B$BASE00} $sign$capacity"
+}
+
+clock() {
+    # Output clock format "Mon 01 Jan 2015 00:00"
+    dateo=`date '+%a %d %b %R'`
+    echo "%{F$BASE03}%{B$BASE00} time %{F-}%{B$BASE00} $dateo"
+
+}
+
+volume() {
+    # Get current volume
+    vol=`amixer get Master | grep 'Front Left' | egrep -o "[0-9]+%" |\
+        rev | cut -c 2- | rev`
+
+    # Decide which icon and colour to show
+    if [ ! `amixer get Master | tail -1 | grep -oe off` ]; then
+        if [ $vol == 0 ]; then
+            volico="%{F$BASE03}%{B$BASE00} volume %{F-}%{B$BASE00}"
+        else
+            volico="%{F$BASE03}%{B$BASE00} volume %{F-}%{B$BASE00}"
+        fi
+    else
+        volico="%{F$BASE05}%{B$BASE01} MUTE %{F-}%{B$BASE00}"
+    fi
+
+    # Change colour if volume is lower than 60
+    if [ $vol -lt 60 ]; then
+        vol="%{F$BASE05}%{B$BASE00}$vol"
+    fi
+
+    echo "$volico $vol"
+
+}
+
+cpu() {
+    # Output CPU usage as an integer
+    cpu=$(ps -eo pcpu | awk 'BEGIN {sum=0.0f} {sum+=$1} END {print sum}' | cut -c1-2)
+    echo "%{F$BASE03}%{B$BASE00} cpu %{F-}%{B$BASE00} $cpu%"
+}
+
+hdd() {
+    # Show root partition % used and home volume remaining
+    HDDROOT=`df -h | grep /dev/sda1 | awk '{print $5}'`
+    HDDHOME=`df -h | grep /dev/sda2 | awk '{print $4}'`
+    echo "%{F$BASE03}%{B$BASE00} root %{F-}%{B$BASE00} $HDDROOT %{F$BASE03}%{B$BASE00} home %{F-}%{B$BASE00} $HDDHOME"
+
+}
+
+ram() {
+    # Show ram used / ram total
+    total=`free -mh | grep Mem | awk '{print $3}'`
+    free=`free -mh | grep Mem | awk '{print $2}'`
+    echo "%{F$BASE03}%{B$BASE00} ram %{F-}%{B$BASE00} $total / $free"
+}
+
+
+wifi() {
+    # Show wifi ssid if connected.
+    dev="wlp3s0b1"
+    ssid="$(iwgetid -r)"
+    if [[ $ssid ]]; then
+        echo "%{F$BASE03}%{B$BASE00} wifi %{F-}%{B$BASE00} $ssid"
+    else
+        echo "%{F$BASE03}%{B$BASE00} wifi %{F-}%{B$BASE00} Disconnected"
+    fi
+    # strength="$(iw dev $dev link | grep signal | egrep -o '[0-9]+')"
+    # echo -e "$ssid  $strength"
+
+}
+
+archinfo() {
+    # Other system information
+    hostname=`uname -n`
+    uptime=`uptime | sed 's/.* up *//;s/[0-9]* us.*//;s/ day, /d /;s/ days, /d /;s/:/h /;s/ min//;s/,/m/;s/ / /'`
+    packages=`pacman -Q | wc -l`
+    updates=`pacman -Qu | wc -l`
+
+    echo "%{F$BASE02}%{B$BASE00} hostname %{F-}%{B$BASE00} $hostname"\
+    "%{F$BASE02}%{B$BASE00} uptime %{F-}%{B$BASE00} $uptime"\
+    "%{F$BASE02}%{B$BASE00} packages %{F-}%{B$BASE00} $packages"\
+    "%{F$BASE02}%{B$BASE00} updates %{F-}%{B$BASE00} $updates"
+}
+
+while :; do
+
+    printf "%s\n" "B$(battery)"
+    printf "%s\n" "a$(archinfo)"
+    printf "%s\n" "R$(ram)"
+    printf "%s\n" "C$(cpu)"
+    printf "%b\n" "V$(volume)"
+    printf "%s\n" "w$(wifi)"
+    printf "%s\n" "T$(clock)"
+    printf "%s\n" "h$(hdd)"
+    sleep 0.5
+done

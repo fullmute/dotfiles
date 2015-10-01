@@ -1,0 +1,5 @@
+#!/bin/bash
+
+font="Tamsyn-9"
+
+dmenu_run -i -h 16 -y 0 -x 0 -w 500  -p ">" -fn "$font" -nb "#101010" -nf "#b9b9b9" -sb "#101010" -sf "#f2777a"

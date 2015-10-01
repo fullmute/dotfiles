@@ -1,0 +1,8 @@
+#!/bin/bash
+
+scrot -s /tmp/scrot.png
+puush /tmp/scrot.png
+link=$(xclip -selection clipboard -o)
+
+
+notify-send "Puush complete" "$link" -t 0

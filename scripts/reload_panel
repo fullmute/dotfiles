@@ -1,0 +1,3 @@
+#!/bin/bash
+
+killall panel; killall lemonbar; panel &
